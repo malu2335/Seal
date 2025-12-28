@@ -3,6 +3,7 @@ package com.junkfood.seal.util
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.OPEN_READONLY
 import android.media.MediaCodecList
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.webkit.CookieManager
@@ -83,6 +84,37 @@ object DownloadUtil {
     private const val CROP_ARTWORK_COMMAND =
         """--ppa "ffmpeg: -c:v mjpeg -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"""""
 
+    private fun isFansOneUrl(url: String): Boolean {
+        val host =
+            runCatching { Uri.parse(url).host }
+                .getOrNull()
+                ?.lowercase(Locale.US)
+                ?: return false
+        return host == "fansone.co" || host.endsWith(".fansone.co")
+    }
+
+    private fun hasUsableCookiesFile(): Boolean {
+        val file = context.getCookiesFile()
+        if (!file.exists()) return false
+        return runCatching {
+                // Netscape cookie file format: ignore comments (#...) and blank lines
+                file.readLines().any { it.isNotBlank() && !it.trimStart().startsWith("#") }
+            }
+            .getOrDefault(false)
+    }
+
+    private fun shouldForceCookiesForUrl(url: String): Boolean {
+        if (!AUTO_COOKIES_FOR_PROTECTED_SITES.getBoolean()) return false
+        if (!isFansOneUrl(url)) return false
+        return hasUsableCookiesFile()
+    }
+
+    private fun getCookiesUserAgent(preferencesUserAgent: String): String {
+        if (preferencesUserAgent.isNotBlank()) return preferencesUserAgent
+        // Fallback to the last WebView user agent; WebViewPage keeps this up to date.
+        return USER_AGENT_STRING.getString()
+    }
+
     @CheckResult
     fun getPlaylistOrVideoInfo(
         playlistURL: String,
@@ -109,8 +141,9 @@ object DownloadUtil {
                     if (forceIpv4) {
                         addOption("-4")
                     }
-                    if (cookies) {
-                        enableCookies(userAgentString)
+                    val useCookies = cookies || shouldForceCookiesForUrl(playlistURL)
+                    if (useCookies) {
+                        enableCookies(getCookiesUserAgent(userAgentString))
                     }
                     if (restrictFilenames) {
                         addOption("--restrict-filenames")
@@ -154,8 +187,9 @@ object DownloadUtil {
                         addOption("-x")
                     }
                     applyFormatSorter(this@with, toFormatSorter())
-                    if (cookies) {
-                        enableCookies(userAgentString)
+                    val useCookies = cookies || shouldForceCookiesForUrl(url)
+                    if (useCookies) {
+                        enableCookies(getCookiesUserAgent(userAgentString))
                     }
                     if (proxy) {
                         enableProxy(proxyUrl)
@@ -685,8 +719,9 @@ object DownloadUtil {
                 .apply {
                     addOption("--no-mtime")
                     //                addOption("-v")
-                    if (cookies) {
-                        enableCookies(userAgentString)
+                    val useCookies = cookies || shouldForceCookiesForUrl(url)
+                    if (useCookies) {
+                        enableCookies(getCookiesUserAgent(userAgentString))
                     }
                     if (restrictFilenames) {
                         addOption("--restrict-filenames")
@@ -901,8 +936,10 @@ object DownloadUtil {
                         FileUtil.writeContentToFile(template.template, context.getConfigFile())
                             .absolutePath,
                     )
-                    if (cookies) {
-                        enableCookies(userAgentString)
+                    val forceCookies = urlList.any(::shouldForceCookiesForUrl)
+                    val useCookies = cookies || forceCookies
+                    if (useCookies) {
+                        enableCookies(getCookiesUserAgent(userAgentString))
                     }
                 }
             }
@@ -942,8 +979,10 @@ object DownloadUtil {
                         FileUtil.writeContentToFile(template.template, context.getConfigFile())
                             .absolutePath,
                     )
-                    if (cookies) {
-                        enableCookies(userAgentString)
+                    val forceCookies = urlList.any(::shouldForceCookiesForUrl)
+                    val useCookies = cookies || forceCookies
+                    if (useCookies) {
+                        enableCookies(getCookiesUserAgent(userAgentString))
                     }
                 }
 

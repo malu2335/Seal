@@ -34,6 +34,7 @@ import com.junkfood.seal.ui.component.PreferenceSubtitle
 import com.junkfood.seal.ui.component.PreferenceSwitch
 import com.junkfood.seal.ui.component.PreferenceSwitchWithDivider
 import com.junkfood.seal.util.ARIA2C
+import com.junkfood.seal.util.AUTO_COOKIES_FOR_PROTECTED_SITES
 import com.junkfood.seal.util.CELLULAR_DOWNLOAD
 import com.junkfood.seal.util.COOKIES
 import com.junkfood.seal.util.CUSTOM_COMMAND
@@ -59,6 +60,7 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
     var aria2c by remember { mutableStateOf(ARIA2C.getBoolean()) }
     var proxy by PROXY.booleanState
     var isCookiesEnabled by COOKIES.booleanState
+    var autoCookiesForProtectedSites by AUTO_COOKIES_FOR_PROTECTED_SITES.booleanState
     var forceIpv4 by FORCE_IPV4.booleanState
 
     Scaffold(
@@ -172,6 +174,19 @@ fun NetworkPreferences(navigateToCookieProfilePage: () -> Unit = {}, onNavigateB
                         icon = Icons.Outlined.Cookie,
                         onClick = { navigateToCookieProfilePage() },
                     )
+                }
+                item {
+                    PreferenceSwitch(
+                        title = stringResource(R.string.auto_use_cookies_for_protected_sites),
+                        description =
+                            stringResource(R.string.auto_use_cookies_for_protected_sites_desc),
+                        icon = Icons.Outlined.Cookie,
+                        enabled = !isCustomCommandEnabled,
+                        isChecked = autoCookiesForProtectedSites,
+                    ) {
+                        autoCookiesForProtectedSites = !autoCookiesForProtectedSites
+                        AUTO_COOKIES_FOR_PROTECTED_SITES.updateBoolean(autoCookiesForProtectedSites)
+                    }
                 }
             }
         },

@@ -78,6 +78,7 @@ const val SPONSORBLOCK = "sponsorblock"
 const val SPONSORBLOCK_CATEGORIES = "sponsorblock_categories"
 const val ARIA2C = "aria2c"
 const val COOKIES = "cookies"
+const val AUTO_COOKIES_FOR_PROTECTED_SITES = "auto_cookies_for_protected_sites"
 const val USER_AGENT = "user_agent"
 const val USER_AGENT_STRING = "user_agent_string"
 const val AUTO_UPDATE = "auto_update"
@@ -218,6 +219,7 @@ private val BooleanPreferenceDefaults =
         NOTIFICATION to true,
         EMBED_METADATA to true,
         USE_CUSTOM_AUDIO_PRESET to false,
+        AUTO_COOKIES_FOR_PROTECTED_SITES to true,
     )
 
 private val IntPreferenceDefaults =

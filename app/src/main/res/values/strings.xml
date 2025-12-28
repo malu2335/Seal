@@ -185,6 +185,8 @@
     <string name="aria2_desc">Use aria2c as the external downloader</string>
     <string name="cookies">Cookies</string>
     <string name="cookies_desc">Use Netscape formatted cookies for downloads</string>
+    <string name="auto_use_cookies_for_protected_sites">Auto-use cookies for protected sites</string>
+    <string name="auto_use_cookies_for_protected_sites_desc">For sites protected by anti-bot checks (e.g. fansone.co), automatically attach cookies (and WebView User-Agent) when available.</string>
     <string name="cookies_file_name" translatable="false">cookies.txt</string>
     <string name="clear_temp_files">Clear temporary files</string>
     <string name="clear_temp_files_desc">Delete all temporary files from the temporary directory</string>

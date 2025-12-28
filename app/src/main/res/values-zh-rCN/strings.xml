@@ -176,6 +176,8 @@
     <string name="aria2_desc">使用 aria2c 下载器进行下载</string>
     <string name="cookies">Cookies</string>
     <string name="cookies_desc">使用 Netscape 规范的 Cookies 文件进行下载</string>
+    <string name="auto_use_cookies_for_protected_sites">受保护站点自动使用 Cookies</string>
+    <string name="auto_use_cookies_for_protected_sites_desc">对需要反爬校验的站点（如 fansone.co），当本地已有可用 cookies 时自动附加 cookies（并使用 WebView 的 User-Agent）。</string>
     <string name="clear_temp_files">清除临时文件</string>
     <string name="clear_temp_files_desc">删除临时目录下的所有临时文件</string>
     <string name="clear_temp_files_count">共清除了 %1$d 个临时文件</string>
